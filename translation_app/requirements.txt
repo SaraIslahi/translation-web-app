@@ -1,0 +1,4 @@
+Django>=4.2
+deep-translator>=1.11
+gTTS>=2.5
+gunicorn>=21.2

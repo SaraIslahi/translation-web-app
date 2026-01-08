@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Translation Demo | Sara Islahi</title>
+
+    <style>
+      :root {
+        --bg: #0b1220;
+        --panel: rgba(255, 255, 255, 0.06);
+        --text: #eaf0ff;
+        --muted: rgba(234, 240, 255, 0.75);
+        --line: rgba(234, 240, 255, 0.15);
+        --accent: #7c5cff;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+        --radius: 18px;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(900px 500px at 20% 10%, rgba(124, 92, 255, 0.35), transparent 60%),
+          radial-gradient(800px 500px at 85% 25%, rgba(34, 197, 94, 0.18), transparent 60%),
+          radial-gradient(900px 600px at 50% 100%, rgba(59, 130, 246, 0.18), transparent 60%),
+          var(--bg);
+        min-height: 100vh;
+      }
+
+      a { color: inherit; text-decoration: none; }
+      .container { width: min(900px, 92vw); margin: 0 auto; padding: 28px 0; }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.06);
+        font-weight: 800;
+      }
+      .back:hover { background: rgba(255, 255, 255, 0.10); }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+      }
+
+      h1 { margin: 0 0 8px; font-size: clamp(26px, 4vw, 36px); letter-spacing: -0.6px; }
+      .muted { color: var(--muted); margin: 0 0 16px; line-height: 1.6; }
+
+      label { display: block; font-weight: 800; margin: 14px 0 8px; }
+      textarea, select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(234, 240, 255, 0.2);
+        background: rgba(0, 0, 0, 0.18);
+        color: var(--text);
+        outline: none;
+      }
+      textarea { resize: vertical; min-height: 120px; }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .btn {
+        margin-top: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-weight: 900;
+        border: 0;
+        cursor: pointer;
+        background: linear-gradient(135deg, var(--accent), #60a5fa);
+        color: white;
+      }
+      .btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+
+      .result {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line);
+      }
+      .box {
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.06);
+        line-height: 1.6;
+      }
+
+      .error {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 99, 99, 0.35);
+        background: rgba(255, 99, 99, 0.12);
+        color: rgba(255, 230, 230, 0.95);
+        font-weight: 700;
+      }
+
+      @media (max-width: 780px) {
+        .row { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="topbar">
+        <a class="back" href="/">← Back to Home</a>
+      </div>
+
+      <div class="card">
+        <h1>Translation Demo</h1>
+        <p class="muted">
+          Enter text, choose a language, then click <b>Translate</b>.
+          (I will translate your text and generate audio.)
+        </p>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <label for="text">Text to translate</label>
+          <textarea id="text" name="text" placeholder="Type your text here...">{{ text|default:"" }}</textarea>
+
+          <div class="row">
+            <div>
+              <label for="target">Translate to</label>
+              <select id="target" name="target">
+                <option value="fr" {% if target == "fr" %}selected{% endif %}>French (fr)</option>
+                <option value="ar" {% if target == "ar" %}selected{% endif %}>Arabic (ar)</option>
+                <option value="en" {% if target == "en" %}selected{% endif %}>English (en)</option>
+                <option value="es" {% if target == "es" %}selected{% endif %}>Spanish (es)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="tts">Audio (Text-to-Speech)</label>
+              <select id="tts" name="tts">
+                <option value="yes" {% if tts == "yes" %}selected{% endif %}>Yes, generate audio</option>
+                <option value="no" {% if tts == "no" %}selected{% endif %}>No audio</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn" type="submit">Translate</button>
+        </form>
+
+        {% if error %}
+          <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if translated %}
+          <div class="result">
+            <h3 style="margin: 0 0 10px;">Translated text</h3>
+            <div class="box">{{ translated }}</div>
+
+            {% if audio_url %}
+              <h3 style="margin: 16px 0 10px;">Audio</h3>
+              <audio controls src="{{ audio_url }}" style="width: 100%;"></audio>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </body>
+</html>
