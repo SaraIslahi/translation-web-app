@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("translate/", include("translator.urls")),  # or your current setup
+    path("translate/", include("translator.urls")), 
     path("", lambda request: redirect("translate/")),  # ✅ redirect home to /translate/
 ]
 
