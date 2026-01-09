@@ -13,7 +13,7 @@ venv/
 db.sqlite3
 media/
 staticfiles/
-
+*.log
 # macOS
 .DS_Store
 
@@ -21,4 +21,4 @@ staticfiles/
 .vscode/
 
 # Logs
-*.log
+

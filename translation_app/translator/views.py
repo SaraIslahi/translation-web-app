@@ -1,64 +1,46 @@
 from django.shortcuts import render
 from django.conf import settings
-from pathlib import Path
+from deep_translator import GoogleTranslator
+from gtts import gTTS
+import os
 import uuid
 
-# Option A: googletrans (easy demo)  -> pip install googletrans==4.0.0-rc1
-from googletrans import Translator
-
-# Option A for audio: gTTS -> pip install gTTS
-from gtts import gTTS
-
-
-translator = Translator()
-
-
 def translate_view(request):
-    context = {
-        "text": "",
-        "target": "fr",
-        "tts": "yes",
-        "translated": "",
-        "audio_url": "",
-        "error": "",
-    }
+    context = {}
 
     if request.method == "POST":
-        text = (request.POST.get("text") or "").strip()
-        target = request.POST.get("target") or "fr"
-        tts = request.POST.get("tts") or "yes"
+        text = request.POST.get("text", "").strip()
+        target = request.POST.get("target", "fr")
+        tts_choice = request.POST.get("tts", "yes")
 
         context["text"] = text
         context["target"] = target
-        context["tts"] = tts
+        context["tts"] = tts_choice
 
         if not text:
-            context["error"] = "Please enter some text to translate."
-            return render(request, "translate.html", context)
+            context["error"] = "Please enter some text."
+            return render(request, "translator/translate.html", context)
 
         try:
-            # Translate
-            result = translator.translate(text, dest=target)
-            translated_text = result.text
-            context["translated"] = translated_text
+            # ✅ auto-detect source language
+            translated = GoogleTranslator(source="auto", target=target).translate(text)
+            context["translated"] = translated
 
-            # Optional audio generation
-            if tts == "yes":
-                audio_dir = Path(settings.MEDIA_ROOT) / "audio"
-                audio_dir.mkdir(parents=True, exist_ok=True)
+            # ✅ generate audio if requested
+            if tts_choice == "yes":
+                media_dir = os.path.join(settings.BASE_DIR, "media")
+                os.makedirs(media_dir, exist_ok=True)
 
                 filename = f"tts_{uuid.uuid4().hex}.mp3"
-                filepath = audio_dir / filename
+                file_path = os.path.join(media_dir, filename)
 
-                # gTTS needs a supported language code
-                tts_obj = gTTS(text=translated_text, lang=target)
-                tts_obj.save(str(filepath))
+                # gTTS language must be supported; use target language
+                tts = gTTS(text=translated, lang=target)
+                tts.save(file_path)
 
-                context["audio_url"] = f"{settings.MEDIA_URL}audio/{filename}"
+                context["audio_url"] = f"/media/{filename}"
 
         except Exception as e:
-            context["error"] = f"Translation failed: {e}"
+            context["error"] = f"Error: {e}"
 
     return render(request, "translator/translation.html", context)
-
-index = translate_view
