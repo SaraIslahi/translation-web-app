@@ -23,6 +23,39 @@ It is designed as a standalone backend project and is linked from a static portf
 ---
 ## Project Structure
 ```text 
+translation_webapp/
+│
+├── translation_app/                 # Django project root
+│   │
+│   ├── static/                       # Static assets (CSS, JS, images)
+│   │
+│   ├── translation_app/             # Django project configuration
+│   │   ├── __init__.py
+│   │   ├── settings.py              # Project settings
+│   │   ├── urls.py                  # Main URL routing
+│   │   ├── asgi.py
+│   │   └── wsgi.py
+│   │
+│   ├── translator/                  # Translation application module
+│   │   ├── migrations/              # Database migrations
+│   │   ├── templates/               # HTML templates
+│   │   │   └── translator/
+│   │   │       └── translation.html   # Translation UI page
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── models.py
+│   │   ├── tests.py
+│   │   ├── urls.py                  # App URL routing
+│   │   └── views.py                 # Translation + Text-to-Speech logic
+│   │
+│   ├── db.sqlite3                   # Local development database
+│   ├── manage.py                    # Django management script
+│   ├── requirements.txt             # Python dependencies
+│   ├── README.md                    # Project documentation
+│   └── .gitignore                   # Git ignored files
+│
+└── venv/                            # Python virtual environment (ignored by git)
 
 ```
 ## Installation & Setup
