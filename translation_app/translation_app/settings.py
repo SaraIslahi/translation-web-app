@@ -27,7 +27,12 @@ DEBUG = True
 
 import os
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",") if os.environ.get("ALLOWED_HOSTS") else ["*"]
+ALLOWED_HOSTS = [
+    "translation-web-app-production.up.railway.app",
+    ".up.railway.app",
+    "127.0.0.1",
+    "localhost",
+]
 
 
 # Application definition
@@ -97,6 +102,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://translation-web-app-production.up.railway.app",
+
+    "https://*.up.railway.app",
+]
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
 
 
 LANGUAGE_CODE = 'en-us'
